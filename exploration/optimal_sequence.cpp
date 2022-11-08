@@ -15,16 +15,37 @@ using namespace std;
 
 
 template <typename IntType>
-vector<IntType> possible_neighbors(IntType node)
+IntType** initialize_graph()
 {
-	vector<IntType> neighbors(sizeof(IntType) * 8); 	// Initialize neighbors vector to include all variations
+	IntType* graph = new IntType[1 << sizeof(IntType) * 8];		// Initialize graph to contain 2^n where n is the number of bits in IntType
+	for (int i = 0; i < 1 << sizeof(IntType) * 8; i++)
+	{
+		graph[i] = new IntType[sizeof(IntType) * 8];			// Initialize each adjacency array in graph
+		get_adjacency(i, graph[i]);
+	}
+	return graph;
+}
+
+
+template <typename IntType>
+void get_adjacency(IntType node, IntType* neighbors)
+{
 	for (int i = 0; i < sizeof(IntType) * 8; i++)
 	{
 		neighbors[i] = node ^ (1 << i);					// Set the element at each index as node with its ith bit from the right flipped	
 	}
-	return neighbors;
 }
 
+
+template <typename IntType>
+void destroy_graph(IntType** graph)
+{
+	for (int i = 0; i < 1 << sizeof(IntType) * 8; i++)
+	{
+		free [] graph[i];									// Free memory for each adjacency array
+	}
+	free graph;												// Free memory for graph itself
+}
 
 
 int main()
