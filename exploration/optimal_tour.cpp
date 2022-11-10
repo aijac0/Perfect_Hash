@@ -49,25 +49,67 @@ void destroy_graph(IntType **graph, size_t n_bits)
 	delete graph;											// Free memory for graph itself
 }
 
+template <typename IntType>
+void output_path1(IntType *path, size_t n_bits)
+{
+	for (size_t i = 0; i < (1ul << n_bits) - 1; i++)		// Output path in binary
+	{
+		for (int j = n_bits - 1; j >= 0; j--)
+		{
+			cout << (path[i] & (1 << j) ? 1 : 0);
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+
+template <typename IntType>
+void output_path2(IntType *path, size_t n_bits)
+{
+	for (size_t i = 0; i < (1ul << n_bits) - 1; i++)		// Output path differences
+	{
+		int diff = path[i] ^ path[i + 1];
+		for (int j = n_bits - 1; j >= 0; j--)
+		{
+			cout << (diff & (1 << j) ? 1 : 0);
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+
+template <typename IntType>
+void output_path3(IntType *path, size_t n_bits)
+{
+	for (size_t i = 0; i < (1ul << n_bits) - 1; i++)		// Output enumerated path differences
+	{
+		int diff = path[i] ^ path[i + 1];
+		int shifts = 0;
+		for (int j = 0; j < n_bits; j++)
+		{
+			if (diff << j == 1 << (n_bits - 1))
+			{
+				cout << j << endl;
+				break; 
+			}
+		}
+	}
+	cout << endl;
+}
+
 
 template <typename IntType>
 void traverse_helper(IntType node, IntType **graph, bool *visited, IntType *path, size_t depth, size_t n_bits)
 {	
 	if (depth == (1ul << n_bits))												// If all nodes have been visited
 	{
-		for (size_t i = 0; i < (1ul << n_bits); i++)							// Output path in binary
-		{
-			for (int j = n_bits - 1; j >= 0; j--)
-			{
-				cout << (path[i] & (1 << j) ? 1 : 0);
-			}
-			cout << endl;
-		}
-		cout << endl;
+		output_path2(path, n_bits);												// Output path
 	}
 	else 																		// If not all nodes have been visited
 	{	
-		for (size_t i = 0; i < n_bits; i++)											// Iterate over every neighbor of node
+		for (size_t i = 0; i < n_bits; i++)										// Iterate over every neighbor of node
 		{
 			IntType neighbor = graph[node][i];
 			if (visited[neighbor] == false)										// Create new branch if neighbor was not visited
