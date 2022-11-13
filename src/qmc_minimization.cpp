@@ -7,6 +7,7 @@
 // // // // // // // // // // // // // // // // //
 
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ using namespace std;
 int get_rank(size_t exp)
 {
 	int rank = 0;
-    while exp > 0
+    while (exp > 0)
 	{
        	rank++;
         exp = exp & (exp-1);
@@ -41,7 +42,7 @@ int get_rank(size_t exp)
  * @return: Vector of indices in expressions vector which indicate the starting index
  *          of a rank in expressions specified by the index of the vector itself
  */
-vector<size_t> & sort_by_rank(vector<size_t> & expressions)
+vector<size_t> & sort_expressions(vector<size_t> & expressions)
 {
 	size_t n_in_rank[sizeof(size_t) + 1] = {0};
 	
@@ -54,17 +55,17 @@ vector<size_t> & sort_by_rank(vector<size_t> & expressions)
 
 	// For an index i, separation_indices[i] represents the starting
 	// index of a specified rank in the expressions vector
-	vector<size_t>* separation_indices(sizeof(size_t) + 1, 0);
+	vector<size_t>* separation_indices = new vector<size_t>(sizeof(size_t) + 1, 0);
 	for (int i = 0; i < sizeof(size_t); i++)
 	{
-		separation_indices[i+1] = separation_indices[i] + n_in_rank[i];
+		(*separation_indices)[i+1] = (*separation_indices)[i] + n_in_rank[i];
 	}
 	
 	// Set n_in_rank equal to separation_indices to mark the current index
 	// in expressions for the next expression of rank i
 	for (int i = 0; i <= sizeof(size_t); i++)
 	{
-		n_in_rank[i] = separation_indices[i];
+		n_in_rank[i] = (*separation_indices)[i];
 	}
 
 	// Initialize a new vector as the sorted version of expressions
@@ -81,5 +82,23 @@ vector<size_t> & sort_by_rank(vector<size_t> & expressions)
 		expressions[i] = sorted_expressions[i];
 	}
 
-	return separation_indices;
+	return *separation_indices;
+}
+
+
+int main()
+{
+	vector<size_t> expressions = {0, 255, 198, 204, 14, 109, 11, 12, 100, 37, 0, 4, 8, 16, 17, 33, 35};
+	vector<size_t> separation_indices = sort_expressions(expressions);
+		
+	for (int i = 0; i < expressions.size(); i++)
+	{
+		cout << i << ' ' << expressions[i] << ' ' << get_rank(expressions[i]) << endl;
+	}
+	cout << endl << separation_indices.size() << endl;
+	for (int i = 0; i < separation_indices.size(); i++)
+	{
+		cout << separation_indices[i] << endl;
+	}
+	return 0;
 }
